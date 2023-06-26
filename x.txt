@@ -1,0 +1,22 @@
+  run_migrations:
+    build: .
+    env_file: .env
+    environment:
+      POSTGRES_HOST: db
+    depends_on:
+      db:
+        condition: service_healthy
+    command: python manage.py migrate
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      POSTGRES_HOST: "127.0.0.1"
+    depends_on:
+      db:
+        condition: service_healthy
+      run_migrations:
+        condition: service_completed_successfully
+    ports:
+        - "8000:8000"
